@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ea890cd0-265d-4f88-a778-79ced14fbf60" name="Changes" comment="Second commit. The job is done!!">
+    <list default="true" id="ea890cd0-265d-4f88-a778-79ced14fbf60" name="Changes" comment="Improved functionality according to task requirements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
@@ -29,8 +29,6 @@
   </component>
   <component name="GitHubPullRequestSearchHistory"><![CDATA[{
   "lastFilter": {
-    "state": "OPEN",
-    "assignee": "IliyaCherkesov"
   }
 }]]></component>
   <component name="GithubPullRequestsUISettings">
@@ -133,7 +131,15 @@
       <option name="project" value="LOCAL" />
       <updated>1705321575179</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Improved functionality according to task requirements">
+      <option name="closed" value="true" />
+      <created>1705346514061</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1705346514061</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -165,6 +171,7 @@
     <MESSAGE value="Second commit. The job is done!" />
     <MESSAGE value="First commit. User output and library core" />
     <MESSAGE value="Second commit. The job is done!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Second commit. The job is done!!" />
+    <MESSAGE value="Improved functionality according to task requirements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved functionality according to task requirements" />
   </component>
 </project>
