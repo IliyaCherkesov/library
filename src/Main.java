@@ -1,42 +1,61 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Collections;
+import BookLibrary.Model.*;
 public class Main
 {
     public static void main(String[] args)
     {
-        ArrayList<String> LibraryBooks = new ArrayList<String>();
-        LibraryBooks.add("Harry Potter");
-        LibraryBooks.add("Children of Captain Grant");
-        LibraryBooks.add("The Witcher");
+        List<Book> books = new ArrayList<Book>();
+        // ArrayList<String> LibraryBooks = new ArrayList<String>();
+        books.add(new Book("Harry Potter", "Joanne Rowling", "IDODNR-32423-3244", 1999));
+        books.add(new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854));
+        books.add(new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989));
+
+        Scanner in = new Scanner(System.in);
         while (true)
         {
-            Scanner in = new Scanner(System.in);
-            System.out.println("If you want to add your book write 1. If you want to see all of the books print 2. If you want to see the book info print 3 and write it's name");
+            System.out.println("1 - add new book.");
+            System.out.println("2 - print list of the books.");
+            System.out.println("3 - search the books and display details of it");
             String str = in.nextLine();
             if (str.equals("1"))
             {
-                String str1 = in.nextLine();
-                LibraryBooks.add(str1);
+                System.out.println("Enter book name:");
+                String bookName = in.nextLine();
+                System.out.println("Enter author name:");
+                String authorName = in.nextLine();
+                System.out.println("Enter ISBN:");
+                String isbn = in.nextLine();
+                System.out.println("Enter publication year:");
+                int publicationYear = in.nextInt();
+                books.add(new Book(bookName, authorName, isbn, publicationYear));
             }
-            int ArraySize = LibraryBooks.toArray().length;
+            int ArraySize = books.toArray().length;
             if (str.equals("2"))
             {
-                    System.out.println(LibraryBooks);
+                    System.out.println(books);
             }
-                if (str.equals("3"))
+
+            if (str.equals("3"))
+            {
+                String str2 = in.nextLine();
+                for (int i = 0; i < ArraySize; i++)
                 {
-                    String str2 = in.nextLine();
-                    for (int i = 0; i < ArraySize; i++)
+                    Book book = books.get(i);
+                    if(book.getName().contains(str2))
                     {
-                        if(LibraryBooks.get(i).equals(str2))
-                        {
-                            System.out.println("Book name: ");
-                        }
-
+                        System.out.println("Book name: " + book.getName());
                     }
-                }
 
+                }
+            }
+
+            if (str.equals("4")) {
+                break;
+            }
         }
+        in.close();
     }
 }
