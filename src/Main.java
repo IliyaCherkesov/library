@@ -1,8 +1,12 @@
+import java.net.SecureCacheResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Collections;
+import java.util.stream.Stream;
+
 import BookLibrary.Model.*;
+
 public class Main
 {
     public static void main(String[] args)
@@ -19,43 +23,65 @@ public class Main
             System.out.println("1 - add new book.");
             System.out.println("2 - print list of the books.");
             System.out.println("3 - search the books and display details of it");
+            System.out.println("4 - delete particular book by ISBN");
             String str = in.nextLine();
             if (str.equals("1"))
             {
-                System.out.println("Enter book name:");
-                String bookName = in.nextLine();
-                System.out.println("Enter author name:");
-                String authorName = in.nextLine();
-                System.out.println("Enter ISBN:");
-                String isbn = in.nextLine();
-                System.out.println("Enter publication year:");
-                int publicationYear = in.nextInt();
-                books.add(new Book(bookName, authorName, isbn, publicationYear));
+                books.add(addNewBook(in));
             }
-            int ArraySize = books.toArray().length;
             if (str.equals("2"))
             {
-                    System.out.println(books);
+                System.out.println(books);
             }
 
             if (str.equals("3"))
             {
-                String str2 = in.nextLine();
-                for (int i = 0; i < ArraySize; i++)
-                {
-                    Book book = books.get(i);
-                    if(book.getName().contains(str2))
-                    {
-                        System.out.println("Book name: " + book.getName());
-                    }
-
-                }
+                List<Book> listOfBooks = searchBooks(in, books);
+                System.out.println(listOfBooks);
+            }
             }
 
             if (str.equals("4")) {
+                books = deleteBook(in, books);
+
+            }
+
+            if (str.equals("5")) {
                 break;
+
             }
         }
         in.close();
     }
+    private static Book addNewBook(Scanner in)
+    {
+        System.out.println("Enter book name:");
+        String bookName = in.nextLine();
+        System.out.println("Enter author name:");
+        String authorName = in.nextLine();
+        System.out.println("Enter ISBN:");
+        String isbn = in.nextLine();
+        System.out.println("Enter publication year:");
+        int publicationYear = in.nextInt();
+        return new Book(bookName, authorName, isbn, publicationYear);
+    }
+    private static List<Book> searchBooks(Scanner in, List<Book> books)
+    {
+        System.out.print("Please enter the name of the book: ");
+        String search = in.nextLine();
+        Stream<Book> sBooks = books.stream();
+        List<Book> result = sBooks.filter(book -> book.getName().contains(search)).toList();
+        return result;
+    }
+
+    private static List<Book> deleteBook(Scanner in, List<Book> books)
+    {
+        System.out.println("Please enter ISBN of the book: ");
+        String isbn = in.nextLine();
+        Stream<Book> sBooks = books.stream();
+        List<Book> result = sBooks.filter(book -> !book.getIsbn().equals(isbn)).toList();
+        return result;
+    }
+
 }
+
