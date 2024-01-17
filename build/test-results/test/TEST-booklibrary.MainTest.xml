@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="booklibrary.MainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-16T16:58:24" hostname="DESKTOP-4QQB3SL" time="0.019">
+  <properties/>
+  <testcase name="addNewBookTest()" classname="booklibrary.MainTest" time="0.019"/>
+  <system-out><![CDATA[Enter book name:
+Enter author name:
+Enter ISBN:
+Enter publication year:
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
