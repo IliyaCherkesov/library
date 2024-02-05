@@ -16,7 +16,6 @@ public class Main
         books.add(new Book("Harry Potter", "Joanne Rowling", "IDODNR-32423-3244", 1999));
         books.add(new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854));
         books.add(new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989));
-
         Scanner scanner = new Scanner(System.in);
         while (true)
         {

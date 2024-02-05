@@ -1,4 +1,3 @@
-
 package booklibrary;
 
 import booklibrary.model.*;
@@ -7,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class MainTest {
+
     private List<Book> books = new ArrayList<Book>();
 
     @BeforeEach
@@ -41,11 +43,21 @@ public class MainTest {
     void searchBookTest(){
         InputStream input = new ByteArrayInputStream("Harry".getBytes());
         Scanner scanner = new Scanner(input);
-        Book result = Main.searchBooks()
+        String expectedBook = Main.searchBooks(scanner, books).toString();
+        String book = "[" + books.get(0).toString() + "]";
+        assertEquals(expectedBook, book);
+
     }
 
     @Test
     void deleteBookTest(){
-
+        InputStream input = new ByteArrayInputStream("IDODNR-32423-3244".getBytes());
+        Scanner scanner = new Scanner(input);
+        Book book = books.get(0);
+        Boolean deletionAcception = Main.deleteBook(scanner, books);
+        if (!books.contains(book))
+        {
+            assertEquals(true, deletionAcception);
+        }
     }
 }
