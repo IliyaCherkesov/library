@@ -4,7 +4,6 @@ package booklibrary;
 import booklibrary.model.*;
 import booklibrary.utils.ConsoleInputMock;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,13 +13,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class MainTest {
-    private List<Book> books = new ArrayList<Book>();
+    Book book1 = new Book("Harry The Potter", "J.K. Rowling", "IDODNR-32423-3244", 1997);
+    Book book2 = new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989);
+    Book book3 = new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854);
+    Dvd dvd1 = new Dvd("David Bowie", 600);
+    Dvd dvd2 = new Dvd("Michael Jackson", 800);
+    Library library;
 
     @BeforeEach
-    void initializeLibrary(){
-        books.add(new Book("Harry Potter and The Room", "Joanne Rowling", "IDODNR-32423-3244", 1999));
-        books.add(new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854));
-        books.add(new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989));
+    void initLibrary() {
+
+        library = new Library();
+        library.add(book1);
+        library.add(book2);
+        library.add(book3);
+        library.add(dvd1);
+        library.add(dvd2);
+
+        Main.library = library;
     }
 
     @Test
@@ -32,49 +42,90 @@ public class MainTest {
         consoleInputMock.writeStringln("AAA-BBB");
         consoleInputMock.writeStringln("1994");
         Book result = Main.addNewBook(scanner);
-        assertEquals(result.getName(), "Arom");
-        assertEquals(result.getAuthor(), "Forge");
-        assertEquals(result.getIsbn(), "AAA-BBB");
-        assertEquals(result.getPublicationYear(), 1994);
-
-        books.add(result);
-        assertEquals(books.size(), 4);
+        assertEquals("Arom", result.getName());
+        assertEquals("Forge", result.getAuthor());
+        assertEquals("AAA-BBB", result.getIsbn());
+        assertEquals(1994, result.getPublicationYear());
     }
 
     @Test
-    void searchBookTest(){
+    void searchBookTest() {
         ConsoleInputMock consoleInputMock = new ConsoleInputMock();
         Scanner scanner = new Scanner(consoleInputMock);
         consoleInputMock.writeStringln("Harry");
-        List<Book> result = Main.searchBooks(scanner, books);
-        assertEquals(result.size(), 1);
+        List<Book> result = Main.searchBooksBy(scanner, "name");
+        assertEquals(1, result.size());
 
         consoleInputMock.writeStringln("The");
-        result = Main.searchBooks(scanner, books);
-        assertEquals(result.size(), 2);
+        result = Main.searchBooksBy(scanner, "name");
+        assertEquals(2, result.size());
 
         consoleInputMock.writeStringln("Aurger");
-        result = Main.searchBooks(scanner, books);
-        assertEquals(result.size(), 0);
+        result = Main.searchBooksBy(scanner, "name");
+        assertEquals(0,  result.size());
     }
 
     @Test
-    void deleteBookTest(){
+    void deleteBookTest() {
         ConsoleInputMock consoleInputMock = new ConsoleInputMock();
         Scanner scanner = new Scanner(consoleInputMock);
-        consoleInputMock.writeStringln("IDODNR-32423-3244");
-        boolean result = Main.deleteBook(scanner, books);
+        consoleInputMock.writeStringln(book1.getUniqueId());
+        boolean result = Main.removeItemById(scanner);
         assertEquals(result, true);
-        assertEquals(books.size(), 2);
 
-        consoleInputMock.writeStringln("MEMORE-612-1424531");
-        result = Main.deleteBook(scanner, books);
+        consoleInputMock.writeStringln(book2.getUniqueId());
+        result = Main.removeItemById(scanner);
         assertEquals(result, true);
-        assertEquals(books.size(), 1);
 
         consoleInputMock.writeStringln("Aurger");
-        result = Main.deleteBook(scanner, books);
+        result = Main.removeItemById(scanner);
         assertEquals(result, false);
-        assertEquals(books.size(), 1);
     }
+
+    @Test
+    void signUpNewPatron() {
+        ConsoleInputMock consoleInputMock = new ConsoleInputMock();
+        Scanner scanner = new Scanner(consoleInputMock);
+        consoleInputMock.writeStringln("John Doe");
+        Patron result = Main.signUpNewPatron(scanner);
+        assertEquals("John Doe", result.getName());
+    }
+
+    @Test
+    void borrowItemToPatron() {
+        ConsoleInputMock consoleInputMock = new ConsoleInputMock();
+        Scanner scanner = new Scanner(consoleInputMock);
+        consoleInputMock.writeStringln("John Doe");
+        Patron patron = Main.signUpNewPatron(scanner);
+
+        consoleInputMock.writeStringln(patron.ID());
+        consoleInputMock.writeStringln(book1.getUniqueId());
+        boolean result = Main.borrowItemToPatron(scanner);
+        int borrowedCount = library.listBorrowed().size();
+        assertEquals(result, true);
+        assertEquals(borrowedCount, 1);
+    }
+
+    @Test
+    void returnItemFromPatron() {
+        ConsoleInputMock consoleInputMock = new ConsoleInputMock();
+        Scanner scanner = new Scanner(consoleInputMock);
+        consoleInputMock.writeStringln("John Doe");
+        Patron patron = Main.signUpNewPatron(scanner);
+
+        consoleInputMock.writeStringln(patron.ID());
+        consoleInputMock.writeStringln(book1.getUniqueId());
+        boolean result = Main.borrowItemToPatron(scanner);
+        int borrowedCount = library.listBorrowed().size();
+        assertEquals(result, true);
+        assertEquals(borrowedCount, 1);
+
+        consoleInputMock.writeStringln(patron.ID());
+        consoleInputMock.writeStringln(book1.getUniqueId());
+        result = Main.returnItemFromPatron(scanner);
+        int availableCount = library.listAvailable().size();
+        assertEquals(result, true);
+        assertEquals(availableCount, 5);
+    }
+
 }

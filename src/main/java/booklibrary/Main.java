@@ -1,22 +1,31 @@
 package booklibrary;
 
 import booklibrary.model.Book;
-import java.util.ArrayList;
+import booklibrary.model.Dvd;
+import booklibrary.model.Item;
+import booklibrary.model.Library;
+import booklibrary.model.Patron;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class Main
 {
+    public static Library library = new Library();
+
+    private static void initLibrary() {
+        library.add(new Book("Harry Potter", "Joanne Rowling", "IDODNR-32423-3244", 1999));
+        library.add(new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854));
+        library.add(new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989));
+        library.add(new Dvd("David Bowie", 600));
+        library.add(new Dvd("Michael Jackson", 800));
+    }
+
     public static void main(String[] args)
     {
-        List<Book> books = new ArrayList<Book>();
-        // ArrayList<String> LibraryBooks = new ArrayList<String>();
-        books.add(new Book("Harry Potter", "Joanne Rowling", "IDODNR-32423-3244", 1999));
-        books.add(new Book("Children of Captain Grant", "Jules Gabriel Verne", "DNERN-2341-241211", 1854));
-        books.add(new Book("The Witcher", "Andjey Sapkovsky", "MEMORE-612-1424531", 1989));
-
+        initLibrary();
         Scanner scanner = new Scanner(System.in);
         while (true)
         {
@@ -25,24 +34,57 @@ public class Main
             String str = scanner.nextLine();
             switch(str.trim()) {
                 case "1":
-                    books.add(addNewBook(scanner));
+                    library.add(addNewItem(scanner));
                     break;
                 case "2":
-                    System.out.println(books);
+                    boolean removeSuccess = removeItemById(scanner);
+                    if (!removeSuccess)
+                    {
+                        System.out.println("No item for deletion was found(");
+                    } else {
+                        System.out.println("Item was successfully deleted!");
+                    }
                     break;
                 case "3":
-                    List<Book> listOfBooks = searchBooks(scanner, books);
-                    if (listOfBooks.isEmpty())
-                    {
-                        System.out.println("No books were found(");
+                    Patron patron = signUpNewPatron(scanner);
+                    if (patron != null) {
+                        System.out.println("Patron was successfully signed up! ID: " + patron.ID());
                     }
-                    else
-                        System.out.println(listOfBooks);
                     break;
                 case "4":
-                    if (!deleteBook(scanner, books))
+                    boolean borrowSuccess = borrowItemToPatron(scanner);
+                    if (!borrowSuccess)
                     {
-                         System.out.println("No book for deletion was found(");
+                        System.out.println("No item for borrowing was found(");
+                    } else {
+                        System.out.println("Item was successfully borrowed!");
+                    }
+                    break;
+                case "5":
+                    boolean returnSuccess = returnItemFromPatron(scanner);
+                    if (!returnSuccess)
+                    {
+                        System.out.println("No item for returning was found(");
+                    } else {
+                        System.out.println("Item was successfully returned!");
+                    }
+                    break;
+                case "6":
+                    List<Item> availableItems = library.listAvailable();
+                    System.out.println("Available items: ");
+                    if (availableItems.size() == 0) {
+                        System.out.println("No available items");
+                    } else {
+                        availableItems.forEach(item -> System.out.print(item.toString() + ", \n"));
+                    }
+                    break;
+                case "7":
+                    List<Item> borrowedItems = library.listBorrowed();
+                    System.out.println("Borrowed items: ");
+                    if (borrowedItems.size() == 0) {
+                        System.out.println("No borrowed items");
+                    } else {
+                        borrowedItems.forEach(item -> System.out.print(item.toString() + ", \n"));
                     }
                     break;
                 default:
@@ -57,40 +99,110 @@ public class Main
     }
 
     private static void printMenu() {
-        System.out.println("1 - add new book.");
-        System.out.println("2 - print list of the books.");
-        System.out.println("3 - search the books and display details of it");
-        System.out.println("4 - delete particular book by ISBN");
+        System.out.println("1 - add new library item.");
+        System.out.println("2 - remove library item.");
+        System.out.println("3 - sign up the patron.");
+        System.out.println("4 - borrow library item to patron.");
+        System.out.println("5 - take library item from patron back.");
+        System.out.println("6 - show abailable library items.");
+        System.out.println("7 - show borrowed library items.");
     }
 
-    public static Book addNewBook(Scanner in)
+    public static Patron signUpNewPatron(Scanner scanner) {
+        System.out.println("Enter patron name:");
+        String patronName = scanner.nextLine();
+        return library.signUpNewPatron(patronName);
+    }
+
+    public static Book addNewBook(Scanner scanner)
     {
         System.out.println("Enter book name:");
-        String bookName = in.nextLine();
+        String bookName = scanner.nextLine();
         System.out.println("Enter author name:");
-        String authorName = in.nextLine();
+        String authorName = scanner.nextLine();
         System.out.println("Enter ISBN:");
-        String isbn = in.nextLine();
+        String isbn = scanner.nextLine();
         System.out.println("Enter publication year:");
-        int publicationYear = in.nextInt();
+        int publicationYear = scanner.nextInt();
         return new Book(bookName, authorName, isbn, publicationYear);
     }
-    public static List<Book> searchBooks(Scanner in, List<Book> books)
-    {
-        System.out.print("Please enter the name of the book: ");
-        String search = in.nextLine();
-        Stream<Book> sBooks = books.stream();
-        return sBooks.filter(book -> book.getName().contains(search)).toList();
+
+    public static Dvd addNewDvd(Scanner scanner) {
+        System.out.println("Enter DVD name:");
+        String dvdName = scanner.nextLine();
+        System.out.println("Enter duration:");
+        int duration = scanner.nextInt();
+        return new Dvd(dvdName, duration);
     }
 
-    public static boolean deleteBook(Scanner in, List<Book> books)
+    public static Item addNewItem(Scanner scanner)
     {
-        System.out.println("Please enter ISBN of the book: ");
-        String isbn = in.nextLine();
+        System.out.println("Enter type of item (book/dvd):");
+        System.out.println("1 - book");
+        System.out.println("2 - dvd");
+        String type = scanner.nextLine();
+        switch(type) {
+            case "1":
+                return addNewBook(scanner);
+            case "2":
+                return addNewDvd(scanner);
+            default:
+                return null;
+        }
+    }
+
+    public static List<Book> searchBooksBy(Scanner scanner, String type)
+    {
+        System.out.print("Please enter the name of the book: ");
+        String search = scanner.nextLine();
+        List<Book> books = library.getBooks();
         Stream<Book> sBooks = books.stream();
-        Optional<Book> forDelete = sBooks.filter(book -> book.getIsbn().equals(isbn)).findFirst();
-        forDelete.ifPresent(books::remove);
-        return forDelete.isPresent();
+        Function<Book, Boolean> criteria = (Book book) -> {
+            switch(type) {
+                case "name":
+                    return book.getName().contains(search);
+                case "author":
+                    return book.getAuthor().contains(search);
+                case "isbn":
+                    return book.getIsbn().contains(search);
+                case "publication year":
+                    return String.valueOf(book.getPublicationYear()).contains(search);
+                default:
+                    return false;
+            }
+        };
+        return sBooks.filter(book -> criteria.apply(book)).toList();
+    }
+
+    public static boolean removeItemById(Scanner scanner)
+    {
+        System.out.println("Please enter unique item ID: ");
+        String itemId = scanner.nextLine();
+        Stream<Item> items = library.getItems().stream();
+        Item forDelete = items.filter(item -> item.getUniqueId().equals(itemId)).findFirst().orElse(null);
+        if (forDelete == null) {
+            return false;
+        }
+        library.remove(forDelete);
+        return true;
+    }
+
+    public static boolean borrowItemToPatron(Scanner scanner)
+    {
+        System.out.println("Please enter patron ID: ");
+        String patronId = scanner.nextLine();
+        System.out.println("Please enter item ID: ");
+        String itemId = scanner.nextLine();
+        return library.borrowItem(patronId, itemId);
+    }
+
+    public static boolean returnItemFromPatron(Scanner scanner)
+    {
+        System.out.println("Enter patron ID:");
+        String patronId = scanner.nextLine();
+        System.out.println("Enter item ID:");
+        String itemId = scanner.nextLine();
+        return library.returnItemBack(patronId, itemId);
     }
 
 }

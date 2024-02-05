@@ -1,6 +1,8 @@
 package booklibrary.model;
 
-public class Book {
+import booklibrary.utils.UniqueId;
+
+public class Book extends Item {
     private String name;
     private String author;
     private String isbn;
@@ -8,6 +10,8 @@ public class Book {
 
     public Book(String name, String author, String isbn, int publicationYear)
     {
+        super(UniqueId.generateUniqueId());
+        this.setTitle(name);
         this.name = name;
         this.author = author;
         this.isbn = isbn;
@@ -57,11 +61,22 @@ public class Book {
     @Override
     public String toString()
     {
-        return "Book{" +
-                "name='" + name + '\'' +
-                ", author='" + author + '\'' +
-                ", isbn='" + isbn + '\'' +
-                ", publicationYear=" + publicationYear +
-                '}';
+        return "Book {" +
+                "\tId='" + this.getUniqueId() + "\'\n" +
+                "\tName='" + this.getName() + "\'\n" +
+                "\tAuthor='" + this.getAuthor() + "\'\n" +
+                "\tISBN='" + this.getIsbn() + "\'\n" +
+                "\tPublication Year=" + this.getPublicationYear() + '\n' +
+        '}';
+    }
+
+    @Override
+    public void borrowItem() {
+        this.setBorrowed(true);
+    }
+
+    @Override
+    public void returnItem() {
+        this.setBorrowed(false);
     }
 }
